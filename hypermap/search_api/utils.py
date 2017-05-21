@@ -258,7 +258,7 @@ def parse_solr_geo_range_as_pair(geo_box_str):
 
 
 def parse_lat_lon(point_str):
-    lat, lon = map(float, point_str.split(','))
+    lat, lon = list(map(float, point_str.split(',')))
     return lat, lon
 
 

@@ -39,9 +39,9 @@ class SearchApiTestCase(TestCase):
             self.solr = SolrHypermap()
             # delete solr documents
             # add the schema
-            print '> updating schema'.format(SEARCH_URL)
+            print('> updating schema'.format(SEARCH_URL))
             self.solr.update_schema(catalog=catalog_test_slug)
-            print '> clearing SEARCH_URL={0}'.format(SEARCH_URL)
+            print('> clearing SEARCH_URL={0}'.format(SEARCH_URL))
             self.solr.clear_solr(catalog=catalog_test_slug)
 
             self.search_engine_endpoint = '{0}/solr/{1}/select'.format(
@@ -149,7 +149,7 @@ class SearchApiTestCase(TestCase):
         }
 
     def test_catalogs(self):
-        print '> testing catalogs'
+        print('> testing catalogs')
         url = settings.SITE_URL + reverse("catalog-list")
         res = self.client.get(url)
         self.assertEqual(res.status_code, 200)
@@ -157,16 +157,16 @@ class SearchApiTestCase(TestCase):
         self.assertEqual(len(catalogs), Catalog.objects.all().count())
 
     def test_all_match_docs(self):
-        print '> testing match all docs'
+        print('> testing match all docs')
         params = self.default_params
-        print "searching on [{}]".format(self.api_url)
+        print("searching on [{}]".format(self.api_url))
         results = self.client.get(self.api_url, params)
         self.assertEqual(results.status_code, 200)
         results = json.loads(results.content)
         self.assertEqual(results["a.matchDocs"], Layer.objects.all().count())
 
     def test_q_text(self):
-        print '> testing q text'
+        print('> testing q text')
         layer = Layer.objects.all()[0]
         params = self.default_params
         params["q_text"] = "title:\"{0}\"".format(layer.title)
@@ -182,7 +182,7 @@ class SearchApiTestCase(TestCase):
             self.assertEqual(doc["title"], layer.title)
 
     def test_q_geo(self):
-        print '> testing q geo'
+        print('> testing q geo')
         params = self.default_params
 
         # top right square
@@ -218,11 +218,11 @@ class SearchApiTestCase(TestCase):
         params["q_geo"] = "[-5,-5 5,5]"
         results = self.client.get(self.api_url, params)
         # validate the format
-        print '> testing q geo (format validations)'
+        print('> testing q geo (format validations)')
         self.assertEqual(results.status_code, 400)
 
     def test_q_time(self):
-        print '> testing q time (format validations)'
+        print('> testing q time (format validations)')
         params = self.default_params
 
         # test validations
@@ -231,7 +231,7 @@ class SearchApiTestCase(TestCase):
         # requires [X TO Y]
         self.assertEqual(400, results.status_code)
 
-        print '> testing q time'
+        print('> testing q time')
         # test asterisks
         # all times
         params["q_time"] = "[* TO *]"
@@ -298,7 +298,7 @@ class SearchApiTestCase(TestCase):
         self.assertEqual(len(results["a.time"]["counts"]), Layer.objects.all().count())
 
     def test_utilities(self):
-        print '> testing utilities functions'
+        print('> testing utilities functions')
         # test_parse_datetime_range
         start, end = utils.parse_datetime_range("[2013-03-01 TO 2014-05-02T23:00:00]")
         self.assertTrue(start.get("is_common_era"))

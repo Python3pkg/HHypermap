@@ -7,7 +7,7 @@ Tests for the WorldMap Service Type.
 import unittest
 
 from httmock import with_httmock
-import mocks.worldmap
+from . import mocks.worldmap
 
 from hypermap.aggregator.models import Service, Catalog
 from hypermap.aggregator.enums import DATE_DETECTED, DATE_FROM_METADATA

@@ -47,12 +47,12 @@ class TestBrowser(unittest.TestCase):
         self.verificationErrors = []
         self.accept_next_alert = True
 
-        print '> clearing SEARCH_URL={0}'.format(SEARCH_URL)
+        print('> clearing SEARCH_URL={0}'.format(SEARCH_URL))
         if SEARCH_TYPE == SEARCH_TYPE_SOLR:
             self.solr = SolrHypermap()
             # delete solr documents
             # add the schema
-            print '> updating schema'.format(SEARCH_URL)
+            print('> updating schema'.format(SEARCH_URL))
             self.solr.update_schema(catalog=catalog_test_slug)
             self.solr.clear_solr(catalog=catalog_test_slug)
 
@@ -74,61 +74,61 @@ class TestBrowser(unittest.TestCase):
         ENDPOINT_FILE = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                      "mesonet.agron.iastate.edu.txt")
 
-        print ""
-        print ">>> with env:"
-        print "REGISTRY_SKIP_CELERY: %s" % settings.REGISTRY_SKIP_CELERY
-        print "REGISTRY_LIMIT_LAYERS: %s" % settings.REGISTRY_LIMIT_LAYERS
-        print "REGISTRY_CHECK_PERIOD: %s" % settings.REGISTRY_CHECK_PERIOD
-        print ""
-        print "SELENIUM_HUB_URL: %s" % SELENIUM_HUB_URL
-        print "BROWSER_HYPERMAP_URL: %s" % BROWSER_HYPERMAP_URL
-        print "BROWSER_SEARCH_URL: %s" % BROWSER_SEARCH_URL
-        print "BROWSER_MAPLOOM_URL: %s" % BROWSER_MAPLOOM_URL
-        print "WAIT_FOR_CELERY_JOB_PERIOD: %s" % WAIT_FOR_CELERY_JOB_PERIOD
-        print "ENDPOINT FILE: %s" % ENDPOINT_FILE
-        print ""
-        print "Starting..."
+        print("")
+        print(">>> with env:")
+        print("REGISTRY_SKIP_CELERY: %s" % settings.REGISTRY_SKIP_CELERY)
+        print("REGISTRY_LIMIT_LAYERS: %s" % settings.REGISTRY_LIMIT_LAYERS)
+        print("REGISTRY_CHECK_PERIOD: %s" % settings.REGISTRY_CHECK_PERIOD)
+        print("")
+        print("SELENIUM_HUB_URL: %s" % SELENIUM_HUB_URL)
+        print("BROWSER_HYPERMAP_URL: %s" % BROWSER_HYPERMAP_URL)
+        print("BROWSER_SEARCH_URL: %s" % BROWSER_SEARCH_URL)
+        print("BROWSER_MAPLOOM_URL: %s" % BROWSER_MAPLOOM_URL)
+        print("WAIT_FOR_CELERY_JOB_PERIOD: %s" % WAIT_FOR_CELERY_JOB_PERIOD)
+        print("ENDPOINT FILE: %s" % ENDPOINT_FILE)
+        print("")
+        print("Starting...")
 
         driver = self.driver
         time.sleep(3)
 
         driver.get(self.base_url + "/admin/login/?next=/admin/")
-        print driver.current_url
+        print(driver.current_url)
         driver.find_element_by_id("id_password").clear()
         driver.find_element_by_id("id_password").send_keys("admin")
         driver.find_element_by_id("id_username").clear()
         driver.find_element_by_id("id_username").send_keys("admin")
         driver.find_element_by_css_selector("input[type=\"submit\"]").click()
-        print driver.current_url
+        print(driver.current_url)
         driver.find_element_by_link_text("Periodic tasks").click()
-        print driver.current_url
-        print "> assert 3 periodic tasks. means beat is alive."
+        print(driver.current_url)
+        print("> assert 3 periodic tasks. means beat is alive.")
         self.assertEqual("3 periodic tasks",
                          driver.find_element_by_css_selector(
                              "p.paginator").text)
         driver.find_element_by_link_text("Home").click()
-        print driver.current_url
+        print(driver.current_url)
         driver.find_element_by_link_text("Endpoint lists").click()
-        print driver.current_url
+        print(driver.current_url)
         driver.find_element_by_link_text("Add endpoint list").click()
-        print driver.current_url
-        print "> uploading Endpoint List..."
+        print(driver.current_url)
+        print("> uploading Endpoint List...")
         driver.find_element_by_id("id_upload").clear()
         driver.find_element_by_id("id_upload").send_keys(ENDPOINT_FILE)
         driver.find_element_by_name("_save").click()
-        print driver.current_url
+        print(driver.current_url)
 
-        print "> waiting {0} seconds for celery do the job....".format(
+        print("> waiting {0} seconds for celery do the job....".format(
             WAIT_FOR_CELERY_JOB_PERIOD
-        )
+        ))
         time.sleep(WAIT_FOR_CELERY_JOB_PERIOD)
 
         driver.find_element_by_link_text("Aggregator").click()
         time.sleep(1)
-        print driver.current_url
+        print(driver.current_url)
         driver.find_element_by_link_text("Endpoints").click()
-        print driver.current_url
-        print "> assert Endpoint created."
+        print(driver.current_url)
+        print("> assert Endpoint created.")
         time.sleep(1)
         self.assertEqual(
             "http://mesonet.agron.iastate.edu/cgi-bin/wms/us/wwa.cgi",
@@ -138,14 +138,14 @@ class TestBrowser(unittest.TestCase):
             "http://mesonet.agron.iastate.edu/cgi-bin/wms/us/wwa.cgi").click()
         # self.assertEqual("1 service/s created", driver.find_element_by_id("id_message").text)
         driver.find_element_by_link_text("Endpoints").click()
-        print driver.current_url
+        print(driver.current_url)
         time.sleep(1)
         driver.find_element_by_link_text("Aggregator").click()
-        print driver.current_url
+        print(driver.current_url)
         time.sleep(1)
         driver.find_element_by_link_text("Services").click()
-        print driver.current_url
-        print "> assert 1 Service created."
+        print(driver.current_url)
+        print("> assert 1 Service created.")
         time.sleep(1)
         self.assertEqual("1 service", driver.find_element_by_css_selector(
             "p.paginator").text)
@@ -154,8 +154,8 @@ class TestBrowser(unittest.TestCase):
             driver.find_element_by_css_selector("td.field-url").text)
         driver.find_element_by_xpath(
             '//*[@id="result_list"]/tbody/tr/th/a').click()
-        print driver.current_url
-        print "> assert Service details."
+        print(driver.current_url)
+        print("> assert Service details.")
         time.sleep(1)
 
         self.assertEqual("IEM NWS Warnings WMS Service",
@@ -163,28 +163,28 @@ class TestBrowser(unittest.TestCase):
                              "id_title").get_attribute("value"))
 
         driver.find_element_by_link_text("Services").click()
-        print driver.current_url
+        print(driver.current_url)
         driver.find_element_by_link_text("Aggregator").click()
-        print driver.current_url
+        print(driver.current_url)
         driver.find_element_by_link_text("Layers").click()
-        print driver.current_url
-        print "> assert 3 layers created."
+        print(driver.current_url)
+        print("> assert 3 layers created.")
         time.sleep(1)
         self.assertEqual("3 layers", driver.find_element_by_css_selector(
             "p.paginator").text)
         driver.get(self.base_url + "/registry/")
-        print driver.current_url
-        print "> go to /registry/."
+        print(driver.current_url)
+        print("> go to /registry/.")
 
         for i in range(1, 11):
-            print "> try assert checks count > 0. (%i of 10)" % i
+            print("> try assert checks count > 0. (%i of 10)" % i)
             try:
                 self.assertNotEqual("0", driver.find_element_by_xpath(
                     "//td[4]").text)
-                print "> found"
+                print("> found")
                 break
             except AssertionError as e:
-                print "> wait and reload page"
+                print("> wait and reload page")
                 time.sleep(10)
                 driver.get(self.base_url + "/registry/")
 
@@ -195,19 +195,19 @@ class TestBrowser(unittest.TestCase):
             self.verificationErrors.append(str(e))
 
         driver.get("{0}/hypermap/_count".format(BROWSER_SEARCH_URL))
-        print driver.current_url
+        print(driver.current_url)
         time.sleep(2)
 
         for i in range(1, 11):
-            print "> assert layers indexed are 3. (%i of 10)" % i
+            print("> assert layers indexed are 3. (%i of 10)" % i)
             try:
                 self.assertRegexpMatches(
                     driver.find_element_by_css_selector("pre").text,
                     "^\\{\"count\":3[\\s\\S]*$")
-                print "> found"
+                print("> found")
                 break
             except AssertionError:
-                print "> wait and reload page"
+                print("> wait and reload page")
                 time.sleep(10)
                 driver.refresh()
 
@@ -216,64 +216,64 @@ class TestBrowser(unittest.TestCase):
             "^\\{\"count\":3[\\s\\S]*$")
 
         driver.get(self.base_url + "/registry/")
-        print driver.current_url
+        print(driver.current_url)
         driver.find_element_by_link_text(
             "IEM NWS Warnings WMS Service").click()
-        print driver.current_url
-        print "> remove checks."
+        print(driver.current_url)
+        print("> remove checks.")
         driver.find_element_by_name("remove").click()
-        print driver.current_url
+        print(driver.current_url)
         driver.find_element_by_link_text("Home").click()
-        print driver.current_url
-        print "> assert checks = 0."
+        print(driver.current_url)
+        print("> assert checks = 0.")
         self.assertEqual("0", driver.find_element_by_xpath("//td[4]").text)
         driver.find_element_by_link_text(
             "IEM NWS Warnings WMS Service").click()
-        print driver.current_url
-        print "> trigger check."
+        print(driver.current_url)
+        print("> trigger check.")
         driver.find_element_by_name("check").click()
-        print driver.current_url
+        print(driver.current_url)
         driver.find_element_by_link_text("Home").click()
-        print driver.current_url
+        print(driver.current_url)
 
         for i in range(1, 11):
             try:
-                print "> assert checks = 1. (%i of 10)" % i
+                print("> assert checks = 1. (%i of 10)" % i)
                 self.assertTrue(
                     int(driver.find_element_by_xpath("//td[4]").text) > 0)
-                print "> found"
+                print("> found")
                 break
             except AssertionError:
-                print "> wait and reload page"
+                print("> wait and reload page")
                 time.sleep(10)
                 driver.refresh()
 
         driver.find_element_by_link_text(
             "IEM NWS Warnings WMS Service").click()
-        print driver.current_url
+        print(driver.current_url)
         driver.find_element_by_link_text("wwa").click()
-        print driver.current_url
-        print "> remove checks from Layer."
+        print(driver.current_url)
+        print("> remove checks from Layer.")
         driver.find_element_by_name("remove").click()
-        print driver.current_url
-        print "> assert text [No checks performed so far]."
+        print(driver.current_url)
+        print("> assert text [No checks performed so far].")
         self.assertEqual("No checks performed so far",
                          driver.find_element_by_xpath("//tr[11]/td[2]").text)
-        print "> check Layer."
+        print("> check Layer.")
         driver.find_element_by_name("check").click()
-        print driver.current_url
+        print(driver.current_url)
 
         for i in range(1, 11):
             try:
-                print "> assert text [Total Checks: N>0]. (%i of 10)" % i
+                print("> assert text [Total Checks: N>0]. (%i of 10)" % i)
                 src = driver.page_source
                 text_found_TOTAL_CHECKS_LTE_1 = re.search(
                     r'Total Checks: (1|2|3|4|5|6|7)', src)
                 self.assertNotEqual(text_found_TOTAL_CHECKS_LTE_1, None)
-                print "> found"
+                print("> found")
                 break
             except AssertionError:
-                print "> wait and reload page"
+                print("> wait and reload page")
                 time.sleep(10)
                 driver.get(driver.current_url)
 
@@ -283,16 +283,16 @@ class TestBrowser(unittest.TestCase):
         self.assertNotEqual(text_found_TOTAL_CHECKS_LTE_1, None)
 
         driver.find_element_by_link_text("Home").click()
-        print driver.current_url
+        print(driver.current_url)
         driver.find_element_by_link_text("Monitor").click()
-        print driver.current_url
-        print "> clean Search index and wait"
+        print(driver.current_url)
+        print("> clean Search index and wait")
         driver.find_element_by_name("clear_index").click()
-        print driver.current_url
+        print(driver.current_url)
         time.sleep(5)
         driver.get("{0}/hypermap/_count".format(BROWSER_SEARCH_URL))
-        print driver.current_url
-        print "> assert count != 3 layers"
+        print(driver.current_url)
+        print("> assert count != 3 layers")
         try:
             self.assertNotRegexpMatches(
                 driver.find_element_by_css_selector("pre").text,
@@ -300,9 +300,9 @@ class TestBrowser(unittest.TestCase):
         except AssertionError as e:
             self.verificationErrors.append(str(e))
         driver.get(self.base_url + "/registry/")
-        print driver.current_url
-        print "> finish hypermap page"
-        print ""
+        print(driver.current_url)
+        print("> finish hypermap page")
+        print("")
 
         # TODO: activate this to test maploom, now dat app looks very buggy.
         """
@@ -355,7 +355,7 @@ class TestBrowser(unittest.TestCase):
         try:
             self.driver.find_element(by=how, value=what)
         except NoSuchElementException as e:
-            print e
+            print(e)
             return False
         return True
 
@@ -363,7 +363,7 @@ class TestBrowser(unittest.TestCase):
         try:
             self.driver.switch_to_alert()
         except NoAlertPresentException as e:
-            print e
+            print(e)
             return False
         return True
 

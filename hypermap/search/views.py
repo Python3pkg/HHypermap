@@ -44,7 +44,7 @@ def csw_global_dispatch(request, url=None, catalog_id=None):
     # HH should be able to pass env['wsgi.input'] without hanging
     # details at https://github.com/cga-harvard/HHypermap/issues/94
     if request.method == 'POST':
-        from StringIO import StringIO
+        from io import StringIO
         env['wsgi.input'] = StringIO(request.body)
 
     env.update({'local.app_root': os.path.dirname(__file__),

@@ -7,7 +7,7 @@ Tests for the WMS Service Type.
 import unittest
 
 from httmock import with_httmock
-import mocks.warper
+from . import mocks.warper
 
 from hypermap.aggregator.models import Service, Catalog
 

@@ -3,7 +3,7 @@ import logging
 import math
 import json
 
-from urlparse import urlparse
+from urllib.parse import urlparse
 from django.conf import settings
 from django.utils.html import strip_tags
 
@@ -95,7 +95,7 @@ class ESHypermap(object):
 
         try:
             bbox = ESHypermap.get_bbox(layer)
-            for proj in layer.service.srs.values():
+            for proj in list(layer.service.srs.values()):
                 if proj['code'] in ('102113', '102100'):
                     bbox = mercator_to_llbbox(bbox)
             if (ESHypermap.good_coords(bbox)) is False:
@@ -208,7 +208,7 @@ class ESHypermap(object):
                 # If we want to index with bulk we need to return the layer dictionary.
                 return es_record
 
-        except Exception, e:
+        except Exception as e:
             LOGGER.error(e, exc_info=True)
             LOGGER.error("Elasticsearch: Error saving record for layer with id: %s - %s" % (
                          layer.id, sys.exc_info()[1]))

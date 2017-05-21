@@ -1,5 +1,5 @@
 from django.conf import settings
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 from . import __description__, __version__
 

@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 
 import logging
 from celery import chain
@@ -280,7 +280,7 @@ def index_layer(self, layer, use_cache=False):
                     message=message
                 )
                 task_error.save()
-        except Exception, e:
+        except Exception as e:
             LOGGER.error('Layers NOT indexed correctly')
             LOGGER.error(e, exc_info=True)
             self.retry(layer)

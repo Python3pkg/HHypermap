@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from djcelery.models import TaskMeta
 
-from models import (Service, Layer, Check, SpatialReferenceSystem, EndpointList,
+from .models import (Service, Layer, Check, SpatialReferenceSystem, EndpointList,
                     Endpoint, LayerDate, LayerWM, TaskError, Catalog)
 
 

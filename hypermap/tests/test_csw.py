@@ -36,14 +36,14 @@ class TestCSW(LiveServerTestCase):
         Layer.objects.all().delete()
         Service.objects.all().delete()
 
-        print ""
-        print ">>> with env:"
-        print "REGISTRY_SKIP_CELERY: %s" % settings.REGISTRY_SKIP_CELERY
-        print "REGISTRY_LIMIT_LAYERS: %s" % settings.REGISTRY_LIMIT_LAYERS
-        print "REGISTRY_CHECK_PERIOD: %s" % settings.REGISTRY_CHECK_PERIOD
-        print "REGISTRY_SEARCH_URL: %s" % settings.REGISTRY_SEARCH_URL
-        print "REGISTRY_HARVEST_SERVICES: %s" % settings.REGISTRY_HARVEST_SERVICES
-        print ""
+        print("")
+        print(">>> with env:")
+        print("REGISTRY_SKIP_CELERY: %s" % settings.REGISTRY_SKIP_CELERY)
+        print("REGISTRY_LIMIT_LAYERS: %s" % settings.REGISTRY_LIMIT_LAYERS)
+        print("REGISTRY_CHECK_PERIOD: %s" % settings.REGISTRY_CHECK_PERIOD)
+        print("REGISTRY_SEARCH_URL: %s" % settings.REGISTRY_SEARCH_URL)
+        print("REGISTRY_HARVEST_SERVICES: %s" % settings.REGISTRY_HARVEST_SERVICES)
+        print("")
 
         # Post the 10 Layers contained in this file: data/cswt_insert.xml
         path = os.path.join(settings.PROJECT_DIR, "..",
@@ -179,4 +179,4 @@ class TestCSW(LiveServerTestCase):
             connections[alias].close()
             close_sessions(connections[alias])
 
-        print "Forcefully closed database connections."
+        print("Forcefully closed database connections.")

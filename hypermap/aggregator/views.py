@@ -1,4 +1,4 @@
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import logging
 
 from django.conf import settings
@@ -13,11 +13,11 @@ from django.core.cache import cache
 from djmp.views import get_mapproxy
 
 
-from models import Service, Layer, Catalog
-from tasks import (check_all_services, check_service, check_layer, remove_service_checks,
+from .models import Service, Layer, Catalog
+from .tasks import (check_all_services, check_service, check_layer, remove_service_checks,
                    index_service, index_all_layers, index_layer, index_cached_layers, clear_index,
                    SEARCH_TYPE, SEARCH_URL)
-from enums import SERVICE_TYPES
+from .enums import SERVICE_TYPES
 
 
 LOGGER = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ def domains(request):
     if settings.SEARCH_TYPE == 'solr':
         url = '%s/solr/hypermap/select?q=%s' % (settings.SEARCH_URL, query)
     LOGGER.debug(url)
-    response = urllib2.urlopen(url)
+    response = urllib.request.urlopen(url)
     data = response.read().replace('\n', '')
     # stats
     layers_count = Layer.objects.all().count()
@@ -262,7 +262,7 @@ def layer_mapproxy(request, catalog_slug, layer_uuid, path_info):
 
     # Create a Django response from the MapProxy WSGI response.
     response = HttpResponse(mp_response.body, status=mp_response.status_int)
-    for header, value in mp_response.headers.iteritems():
+    for header, value in mp_response.headers.items():
         response[header] = value
 
     return response

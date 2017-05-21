@@ -123,7 +123,7 @@ class HHypermapRepository(object):
         for tname in self.context.model['typenames']:
             for qname in self.context.model['typenames'][tname]['queryables']:
                 self.queryables[qname] = {}
-                items = self.context.model['typenames'][tname]['queryables'][qname].items()
+                items = list(self.context.model['typenames'][tname]['queryables'][qname].items())
 
                 for qkey, qvalue in items:
                     self.queryables[qname][qkey] = qvalue
@@ -136,8 +136,8 @@ class HHypermapRepository(object):
         self.queryables['_all'].update(self.context.md_core_model['mappings'])
 
         if 'Harvest' in self.context.model['operations'] and 'Transaction' in self.context.model['operations']:
-            self.context.model['operations']['Harvest']['parameters']['ResourceType']['values'] = HYPERMAP_SERVICE_TYPES.keys()  # noqa
-            self.context.model['operations']['Transaction']['parameters']['TransactionSchemas']['values'] = HYPERMAP_SERVICE_TYPES.keys()  # noqa
+            self.context.model['operations']['Harvest']['parameters']['ResourceType']['values'] = list(HYPERMAP_SERVICE_TYPES.keys())  # noqa
+            self.context.model['operations']['Transaction']['parameters']['TransactionSchemas']['values'] = list(HYPERMAP_SERVICE_TYPES.keys())  # noqa
 
     def dataset(self):
         ''' Stub to mock a pycsw dataset object for Transactions'''
@@ -218,7 +218,7 @@ class HHypermapRepository(object):
             resourcetype = resourcetype.csw_schema
         else:  # insert of service
             hhclass = 'Service'
-            if resourcetype not in HYPERMAP_SERVICE_TYPES.keys():
+            if resourcetype not in list(HYPERMAP_SERVICE_TYPES.keys()):
                 raise RuntimeError('Unsupported Service Type')
 
         return self._insert_or_update(resourcetype, source, mode='insert', hhclass=hhclass)

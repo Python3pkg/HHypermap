@@ -70,7 +70,7 @@ class SolrHypermap(object):
                 if 'error' in res:
                     success = False
                     message = "Error syncing layer id %s to Solr: %s" % (layer.id, res["error"].get("msg"))
-            except Exception, e:
+            except Exception as e:
                 success = False
                 message = "Error syncing layer id %s to Solr: %s" % (layer.id, sys.exc_info()[1])
                 LOGGER.error(e, exc_info=True)

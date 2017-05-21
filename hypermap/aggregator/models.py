@@ -2,12 +2,12 @@ import datetime
 import os
 import re
 import json
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import requests
 import logging
 import uuid
 
-from urlparse import urlparse
+from urllib.parse import urlparse
 from dateutil.parser import parse
 
 from django.conf import settings
@@ -32,9 +32,9 @@ from owslib.wms import WebMapService
 from owslib.wmts import WebMapTileService
 from arcrest import MapService as ArcMapService, ImageService as ArcImageService
 
-from enums import CSW_RESOURCE_TYPES, SERVICE_TYPES, DATE_TYPES, SUPPORTED_SRS
-from tasks import update_endpoint, update_endpoints, check_service, check_layer, index_layer
-from utils import get_esri_extent, get_esri_service_name, get_wms_version_negotiate, format_float, flip_coordinates
+from .enums import CSW_RESOURCE_TYPES, SERVICE_TYPES, DATE_TYPES, SUPPORTED_SRS
+from .tasks import update_endpoint, update_endpoints, check_service, check_layer, index_layer
+from .utils import get_esri_extent, get_esri_service_name, get_wms_version_negotiate, format_float, flip_coordinates
 
 from hypermap.dynasty.utils import get_mined_dates
 
@@ -82,7 +82,7 @@ def add_metadata_dates_to_layer(dates, layer):
                             layerdate, created = LayerDate.objects.get_or_create(layer=layer, date=fdate, type=1)
                         else:
                             LOGGER.debug('Skipping date "%s" as is invalid.' % date)
-                    except Exception, e:
+                    except Exception as e:
                         LOGGER.warning('Skipping date "%s" as is invalid.' % date)
                         LOGGER.warning(str(e))
 
@@ -213,17 +213,17 @@ class Resource(models.Model):
     @property
     def average_response_time(self):
         # TODO: exclude failed checks with response time = 0.0
-        return self.check_set.aggregate(Avg('response_time')).values()[0]
+        return list(self.check_set.aggregate(Avg('response_time')).values())[0]
 
     @property
     def min_response_time(self):
         # TODO: exclude failed checks with response time = 0.0
-        return self.check_set.aggregate(Min('response_time')).values()[0]
+        return list(self.check_set.aggregate(Min('response_time')).values())[0]
 
     @property
     def max_response_time(self):
         # TODO: exclude failed checks with response time = 0.0
-        return self.check_set.aggregate(Max('response_time')).values()[0]
+        return list(self.check_set.aggregate(Max('response_time')).values())[0]
 
     @property
     def last_response_time(self):
@@ -421,10 +421,10 @@ class Service(Resource):
                     extent['ymax']
                 ])
             if self.type == 'Hypermap:WorldMap':
-                urllib2.urlopen(self.url)
+                urllib.request.urlopen(self.url)
                 title = 'Harvard WorldMap'
             if self.type == 'Hypermap:WARPER':
-                urllib2.urlopen(self.url)
+                urllib.request.urlopen(self.url)
             # update title without raising a signal and recursion
             if title:
                 self.title = title
@@ -453,7 +453,7 @@ class Service(Resource):
             )
             anytexts = gen_anytext(title, abstract, keywords)
             Service.objects.filter(id=self.id).update(anytext=anytexts, xml=xml, csw_type='service')
-        except Exception, e:
+        except Exception as e:
             LOGGER.error(e, exc_info=True)
             message = str(e)
             success = False
@@ -776,7 +776,7 @@ class Layer(Resource):
                     dpi='96',
                     format='jpg'
                 )
-            except Exception, e:
+            except Exception as e:
                 LOGGER.error(e, exc_info=True)
 
             name = re.sub('[^\w\-_\. ]', '_', self.name)
@@ -795,7 +795,7 @@ class Layer(Resource):
                     str(self.bbox_y1)
                 )
                 image = arcserver.ExportImage(bbox=bbox)
-            except Exception, e:
+            except Exception as e:
                 LOGGER.error(e, exc_info=True)
             name = re.sub('[^\w\-_\. ]', '_', self.name)
             thumbnail_file_name = '%s%s.jpg' % ('/tmp/', name)
@@ -823,12 +823,12 @@ class Layer(Resource):
             self.update_thumbnail()
             signals.post_save.connect(layer_post_save, sender=Layer)
 
-        except ValueError, err:
+        except ValueError as err:
             # caused by update_thumbnail()
             # self.href is empty in arcserver.ExportMap
             if str(err).startswith("unknown url type:"):
                 LOGGER.debug('Thumbnail can not be updated: %s' % str(err))
-        except Exception, err:
+        except Exception as err:
             message = str(err)
             success = False
 
@@ -883,7 +883,7 @@ class Layer(Resource):
         for tag in registry_tags:
             try:
                 registry_dict[tag.attrib['name']] = tag.attrib['value']
-            except Exception, e:
+            except Exception as e:
                 LOGGER.error(e, exc_info=True)
 
         return registry_dict
@@ -1508,7 +1508,7 @@ def update_layers_esri_mapserver(service, greedy_opt=False):
                     wms_url = wms_url.replace('?f=json', 'WMSServer?')
                 LOGGER.debug('This ESRI REST endpoint has an WMS interface to process: %s' % wms_url)
                 # import here as otherwise is circular (TODO refactor)
-                from utils import create_service_from_endpoint
+                from .utils import create_service_from_endpoint
                 create_service_from_endpoint(wms_url, 'OGC:WMS', catalog=service.catalog)
         # now process the REST interface
         layer_n = 0

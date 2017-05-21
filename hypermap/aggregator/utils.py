@@ -1,5 +1,5 @@
 import arcrest
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import logging
 import requests
 import re
@@ -7,7 +7,7 @@ import sys
 import math
 import traceback
 import datetime
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 from django.utils.html import strip_tags
 from django.conf import settings
@@ -29,7 +29,7 @@ def create_layer_from_metadata_xml(resourcetype, xml, monitor=False, service=Non
     """
     Create a layer / keyword list from a metadata record if it does not already exist.
     """
-    from models import gen_anytext, Layer
+    from .models import gen_anytext, Layer
 
     if resourcetype == 'http://www.opengis.net/cat/csw/2.0.2':  # Dublin core
         md = CswRecord(etree.fromstring(xml))
@@ -63,7 +63,7 @@ def create_service_from_endpoint(endpoint, service_type, title=None, abstract=No
     """
     Create a service from an endpoint if it does not already exists.
     """
-    from models import Service
+    from .models import Service
     if Service.objects.filter(url=endpoint, catalog=catalog).count() == 0:
         # check if endpoint is valid
         request = requests.get(endpoint)
@@ -97,7 +97,7 @@ def create_services_from_endpoint(url, catalog, greedy_opt=True):
     num_created = 0
     endpoint = get_sanitized_endpoint(url)
     try:
-        urllib2.urlopen(endpoint, timeout=10)
+        urllib.request.urlopen(endpoint, timeout=10)
     except Exception as e:
         message = traceback.format_exception(*sys.exc_info())
         LOGGER.error('Cannot open this endpoint: %s' % endpoint)
@@ -166,7 +166,7 @@ def create_services_from_endpoint(url, catalog, greedy_opt=True):
                                 maxrecords=pagesize, outputschema=outputschema, esn='full')
             except Exception as err:  # this is a CSW, but server rejects query
                 raise RuntimeError(csw.response)
-            for k, v in csw.records.items():
+            for k, v in list(csw.records.items()):
                 # try to parse metadata
                 try:
                     LOGGER.info('Looking for service links')
@@ -194,7 +194,7 @@ def create_services_from_endpoint(url, catalog, greedy_opt=True):
                                 if service is not None:
                                     num_created = num_created + 1
                                     LOGGER.info('Found %s services on endpoint' % num_created)
-                            except Exception, e:
+                            except Exception as e:
                                 LOGGER.error('Could not create service for %s : %s' % (scheme, ref['url']))
                                 LOGGER.error(e, exc_info=True)
                     LOGGER.debug('Looking for service links via the GeoNetwork-ish dc:URI')
@@ -213,7 +213,7 @@ def create_services_from_endpoint(url, catalog, greedy_opt=True):
                                 if service is not None:
                                     num_created = num_created + 1
                                     LOGGER.info('Found %s services on endpoint' % num_created)
-                            except Exception, e:
+                            except Exception as e:
                                 LOGGER.error('Could not create service for %s : %s' % (scheme, u['url']))
                                 LOGGER.error(e, exc_info=True)
 
@@ -366,8 +366,8 @@ def get_single_service(esri, url_sections):
     # We create a list with both services
     else:
         service_dict = service_to_process.__dict__
-        service_to_process = {idx: val for idx, val in service_dict.iteritems()
-                              if idx in ['ImageServer', 'MapServer']}.values()
+        service_to_process = list({idx: val for idx, val in service_dict.items()
+                              if idx in ['ImageServer', 'MapServer']}.values())
 
     return service_to_process
 
@@ -473,7 +473,7 @@ def get_esri_extent(esriobj):
 
     try:
         srs = extent['spatialReference']['wkid']
-    except KeyError, err:
+    except KeyError as err:
         LOGGER.error(err, exc_info=True)
 
     return [extent, srs]
@@ -527,7 +527,7 @@ def get_solr_date(pydate, is_negative):
             return solr_date
         else:
             return None
-    except Exception, e:
+    except Exception as e:
         LOGGER.error(e, exc_info=True)
         return None
 

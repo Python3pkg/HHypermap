@@ -348,11 +348,11 @@ def elasticsearch(serializer, catalog):
         for item in es_response['hits']['hits']:
             # data
             temp = item['_source']['abstract']
-            temp = temp.replace(u'\u201c', "\"")
-            temp = temp.replace(u'\u201d', "\"")
+            temp = temp.replace('\u201c', "\"")
+            temp = temp.replace('\u201d', "\"")
             temp = temp.replace('"', "\"")
             temp = temp.replace("'", "\'")
-            temp = temp.replace(u'\u2019', "\'")
+            temp = temp.replace('\u2019', "\'")
             item['_source']['abstract'] = temp
             docs.append(item['_source'])
 
@@ -465,7 +465,7 @@ def solr(serializer):
     except Exception as e:
         return 500, {"error": {"msg": str(e)}}
 
-    print '>', res.url
+    print('>', res.url)
 
     solr_response = res.json()
     solr_response["solr_request"] = res.url
@@ -543,11 +543,11 @@ def solr(serializer):
         data["a.text"] = counts
 
     subs = []
-    for label, values in solr_response["debug"]["timing"].iteritems():
+    for label, values in solr_response["debug"]["timing"].items():
         if type(values) is not dict:
             continue
         subs_data = {"label": label, "subs": []}
-        for label, values in values.iteritems():
+        for label, values in values.items():
             if type(values) is not dict:
                 subs_data["millis"] = values
                 continue
@@ -585,7 +585,7 @@ def parse_get_params(request):
 
     get = request.GET.copy()
     new_get = request.GET.copy()
-    for key in get.iterkeys():
+    for key in get.keys():
         if key.count(".") > 0:
             new_key = key.replace(".", "_")
             new_get[new_key] = get.get(key)

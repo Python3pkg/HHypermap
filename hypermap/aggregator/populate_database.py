@@ -1,8 +1,8 @@
 import logging
 from django.conf import settings
 
-from models import Service
-from utils import create_services_from_endpoint
+from .models import Service
+from .utils import create_services_from_endpoint
 
 LOGGER = logging.getLogger(__name__)
 
